@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Line Graph on Jose Ignacio</title>
+    <link>/tags/line-graph/</link>
+    <description>Recent content in Line Graph on Jose Ignacio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Jose Guzman</copyright>
+    <lastBuildDate>Mon, 03 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/line-graph/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How (I Think) They Made It: New York Times Game of Thrones Line Graph</title>
+      <link>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</link>
+      <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</guid>
+      <description>Introduction The NY Times recently published an article showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The line graph is faceted by season, and the creators also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with a 5.</description>
+    </item>
+    
+  </channel>
+</rss>
