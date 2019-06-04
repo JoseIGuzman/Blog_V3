@@ -1,5 +1,5 @@
----
-author: My Name
+--- 
+author: Jose Ignacio
 date: "2015-04-03T02:13:50Z"
 description: Things about me.
 title: About
@@ -7,8 +7,6 @@ title: About
 
 ## About
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nec dolor in magna lobortis egestas. Suspendisse eu erat tempor, tristique neque eu, convallis nulla. Curabitur vel bibendum lacus, at semper mauris. Suspendisse aliquet commodo ex, sed sagittis metus aliquam id. Maecenas feugiat rutrum lorem vel imperdiet. Nullam ornare lectus ut enim finibus, et porttitor mi tincidunt. Aenean lacinia, leo quis vehicula eleifend, quam libero sagittis erat, at euismod augue mauris et sapien. Sed id vehicula lectus, sit amet auctor ipsum. Nunc sed massa vel ex condimentum aliquam in a enim. Cras enim sem, tristique eu enim ac, congue commodo mi. Integer quis orci at dolor blandit eleifend.
+Hello, I'm Jose Ignacio Guzman. This blog showcases my progress with the R programming language, development of other programming/technical skills, and general ideas about geography, technology, and politics. 
 
-## School
-
-Sed quis pulvinar nisi, sed dapibus lacus. Mauris tempus ex ut ipsum facilisis interdum. Integer feugiat urna sed feugiat tempor. Quisque dictum vestibulum feugiat. Nunc nec est volutpat lorem imperdiet egestas sit amet ut orci. Aliquam venenatis neque ipsum, a placerat lectus cursus at. Donec pellentesque tellus hendrerit faucibus posuere. Etiam gravida consequat lectus, volutpat consectetur velit convallis nec. Praesent sagittis luctus dignissim.
+My academic background is in international affairs. I began learning the R programming language in early 2018 and haven't stopped since. I'm mainly interested in GIS, Cartography, data visualization, and data analysis.My hope with this blog is that it will serve as an archive of things I learn, a guide for answering questions, and hopefully a place to teach others along the way.
