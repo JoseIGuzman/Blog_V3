@@ -1,26 +1,19 @@
 ---
 title: 'How (I Think) They Made It: New York Times Game of Thrones Line Graph'
-author: Jose I Guzman
+author: "Jose I Guzman"
 date: '2019-06-03'
-slug: how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph
-categories:
-  - R
-tags:
-  - R
-  - Data Visualization
-  - Line Graph
 description: ''
+slug: how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph
+tags:
+- R
+- Data Visualization
+- Line Graph
+categories: R
 ---
 
 ## Introduction
 
-The *NY Times* recently published an [article](https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html) showing a line graph of IMBd average fan ratings of "Game of Thrones" ("GOT") episodes over the seasons (as well as line graphs of other popular Tv shows). The line graph is faceted by season, and the creators also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, "The Last of the Starks", with a 5.6 average rating.
-
-<center>
-
-![Source: IMDb and New York Times](/Users/joseguzman/Documents/R_Projects/Blog_Version_3/static/post/images/Line_Graph_Screenshot.png)
-
-</center>
+The *NY Times* recently published an [article](https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html) showing a line graph of IMBd average fan ratings of "Game of Thrones" ("GOT") episodes over the seasons (as well as line graphs of other popular Tv shows). The line graph is faceted by season, and the creators also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, "The Last of the Starks", with a 5.6 average rating. You can see the graph bellow:
 
 As you can read in the article, and if you watched the show, the general consensus is that the last season bombed. You can read more about why the last season was the least rated of the show. The purpose of this article is to share how I attempted to replicate this simple, but informative line graph. I'm a fan of the amazing work that the *NY Times* creates, and I'm always wondering about the work process and software that graphic designers and data experts use to create the data visualizations. 
 
@@ -71,9 +64,12 @@ GOT_episode_ratings$seasonNumber <- paste("Season", "", GOT_episode_ratings$seas
 
 GOT_episode_ratings <- GOT_episode_ratings[with(GOT_episode_ratings, order(seasonNumber, episodeNumber)),]
 
+#remove tconst columns
+Final_GOT_ratings <- select(GOT_episode_ratings, -1, -2)
+
 #create interactive data table
-Data_Table <- datatable(GOT_episode_ratings)
-frameWidget(Data_Table, height = 350, width = '95%')
+Data_Table <- datatable(Final_GOT_ratings)
+frameWidget(Data_Table, height = 400, width = '100%')
 ```
 
 ## Creating the Line Graph
@@ -105,7 +101,7 @@ GOT_Graph
 I also wanted to highlight the points of the labeled episodes as seen in the example. For this I added an extra geom_point by choosing the data corresponding to each name. 
 
 ```{r, fig.align='center'}
-GOT_Graph + geom_point(shape = 1, data = filter(GOT_episode_ratings, Name == "The Rains of Castamere" | Name == "Hardhome" | Name == "Battle of the Bastards" | Name == "The Iron Throne"), size = 1.5, stroke = .5)
+GOT_Graph + geom_point(shape = 1, data = filter(GOT_episode_ratings, Name == "The Rains of Castamere" | Name == "Hardhome" | Name == "Battle of the Bastards" | Name == "The Iron Throne"), size = 1.5, stroke = .3) 
 ```
 
 ## Labeling Limitations

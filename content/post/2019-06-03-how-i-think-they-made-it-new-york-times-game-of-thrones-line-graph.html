@@ -1,15 +1,14 @@
 ---
 title: 'How (I Think) They Made It: New York Times Game of Thrones Line Graph'
-author: Jose I Guzman
+author: "Jose I Guzman"
 date: '2019-06-03'
-slug: how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph
-categories:
-  - R
-tags:
-  - R
-  - Data Visualization
-  - Line Graph
 description: ''
+slug: how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph
+tags:
+- R
+- Data Visualization
+- Line Graph
+categories: R
 ---
 
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -19,13 +18,7 @@ description: ''
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The <em>NY Times</em> recently published an <a href="https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html">article</a> showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The line graph is faceted by season, and the creators also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with a 5.6 average rating.</p>
-<center>
-<div class="figure">
-<img src="/Users/joseguzman/Documents/R_Projects/Blog_Version_3/static/post/Images/Line_Graph_Screenshot.png" alt="Source: IMDb and New York Times" />
-<p class="caption">Source: IMDb and New York Times</p>
-</div>
-</center>
+<p>The <em>NY Times</em> recently published an <a href="https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html">article</a> showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The line graph is faceted by season, and the creators also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with a 5.6 average rating. You can see the graph bellow:</p>
 <p>As you can read in the article, and if you watched the show, the general consensus is that the last season bombed. You can read more about why the last season was the least rated of the show. The purpose of this article is to share how I attempted to replicate this simple, but informative line graph. I’m a fan of the amazing work that the <em>NY Times</em> creates, and I’m always wondering about the work process and software that graphic designers and data experts use to create the data visualizations.</p>
 <p>This blog includes the data and code I used to recreate my own version of the line graph showing the average IMDb ratings for every episode of “Game of Thrones”. I’m not sure what program or sofware they used for this graph, but R is a great tool for creating data visualizations, especially with the <code>ggplot</code> package.</p>
 </div>
@@ -59,10 +52,13 @@ GOT_episode_ratings$seasonNumber &lt;- paste(&quot;Season&quot;, &quot;&quot;, G
 GOT_episode_ratings &lt;- GOT_episode_ratings[with(GOT_episode_ratings, order(seasonNumber, 
     episodeNumber)), ]
 
+# remove tconst columns
+Final_GOT_ratings &lt;- select(GOT_episode_ratings, -1, -2)
+
 # create interactive data table
-Data_Table &lt;- datatable(GOT_episode_ratings)
-frameWidget(Data_Table, height = 350, width = &quot;95%&quot;)</code></pre>
-<div id="htmlwidget-1" style="width:95%;height:350px;" class="widgetframe html-widget"></div>
+Data_Table &lt;- datatable(Final_GOT_ratings)
+frameWidget(Data_Table, height = 400, width = &quot;100%&quot;)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:400px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph_files/figure-html//widgets/widget_unnamed-chunk-4.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="creating-the-line-graph" class="section level2">
@@ -91,7 +87,7 @@ GOT_Graph</code></pre>
 <div id="create-subset-data-for-episode-labels" class="section level2">
 <h2>Create Subset Data for episode Labels</h2>
 <p>I also wanted to highlight the points of the labeled episodes as seen in the example. For this I added an extra geom_point by choosing the data corresponding to each name.</p>
-<pre class="r"><code>GOT_Graph + geom_point(shape = 1, data = filter(GOT_episode_ratings, Name == &quot;The Rains of Castamere&quot; | Name == &quot;Hardhome&quot; | Name == &quot;Battle of the Bastards&quot; | Name == &quot;The Iron Throne&quot;), size = 1.5, stroke = .5)</code></pre>
+<pre class="r"><code>GOT_Graph + geom_point(shape = 1, data = filter(GOT_episode_ratings, Name == &quot;The Rains of Castamere&quot; | Name == &quot;Hardhome&quot; | Name == &quot;Battle of the Bastards&quot; | Name == &quot;The Iron Throne&quot;), size = 1.5, stroke = .3) </code></pre>
 <p><img src="/post/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="labeling-limitations" class="section level2">
