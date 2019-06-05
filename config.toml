@@ -1,4 +1,4 @@
-baseurl = "https://jignacio.netlify.com"
+baseurl = "/"
 title = "Jose Ignacio"
 theme = "ghostwriter"
 languageCode = "en-us"
