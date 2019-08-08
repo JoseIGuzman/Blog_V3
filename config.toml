@@ -1,6 +1,6 @@
-baseurl = "https://nanx.me/hugo-tanka/"
-title = "Hugo Tanka Theme"
-author = "Nan Xiao"
+baseurl = "/"
+title = "Data Blog"
+author = "Jose Guzman"
 canonifyurls = true
 languagecode = "en"
 theme = "hugo-tanka"
@@ -19,21 +19,18 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [[menu.main]]
     name = "Home"
-    url = "https://nanx.me"
+    url = "/"
     weight = 1
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/nanxstats"
+    url = "https://github.com/JoseIGuzman"
     weight = 2
 [[menu.main]]
     name = "LinkedIn"
-    url = "https://www.linkedin.com/in/nanxstats"
+    url = "https://www.linkedin.com/in/jignacioguz"
     weight = 3
 [[menu.main]]
     name = "Twitter"
-    url = "https://twitter.com/nanxstats"
+    url = "https://twitter.com/joseignacioguz"
     weight = 4
-[[menu.main]]
-    name = "RSS"
-    url = "/index.xml"
-    weight = 5
+

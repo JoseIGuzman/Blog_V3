@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jose Ignacio</title>
+    <title>Data Blog</title>
     <link>/</link>
-    <description>Recent content on Jose Ignacio</description>
+    <description>Recent content on Data Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>Jose Guzman</copyright>
+    <language>en</language>
     <lastBuildDate>Mon, 03 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>How (I Think) They Made It: New York Times Game of Thrones Line Graph</title>
-      <link>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</link>
+      <link>/post/how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</link>
       <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</guid>
+      <guid>/post/how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</guid>
       <description>Introduction The NY Times recently published an article showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The authors Josh Katz and K.K. Rebbeca Lai faceted the graph by season, and also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with the all-time low 5.</description>
     </item>
     
@@ -34,10 +33,10 @@ My academic background is in international affairs. I began learning the R progr
     <item>
       <title>Contact</title>
       <link>/page/contact/</link>
-      <pubDate>Fri, 03 Apr 2015 02:13:50 +0000</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/page/contact/</guid>
-      <description>Contact Aenean ipsum justo, semper eu nisl ut, pretium tincidunt sem. Praesent et diam sit amet lacus lobortis dictum a id lacus. Quisque hendrerit sit amet turpis eu varius. Ut id lorem ac felis ultrices tincidunt. Pellentesque consequat arcu ac fringilla imperdiet. Phasellus pellentesque, sapien non pulvinar blandit, sapien ante aliquet felis, vel porttitor sapien ante in lacus. Fusce non urna aliquet, malesuada nibh vel, luctus urna. Phasellus ut lacus molestie, varius purus quis, malesuada lorem.</description>
+      <description>Contact You can contact me a jignacioguz@gmail.com</description>
     </item>
     
   </channel>

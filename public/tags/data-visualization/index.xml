@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Data Visualization on Jose Ignacio</title>
+    <title>Data Visualization on Data Blog</title>
     <link>/tags/data-visualization/</link>
-    <description>Recent content in Data Visualization on Jose Ignacio</description>
+    <description>Recent content in Data Visualization on Data Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>Jose Guzman</copyright>
+    <language>en</language>
     <lastBuildDate>Mon, 03 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/data-visualization/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>How (I Think) They Made It: New York Times Game of Thrones Line Graph</title>
-      <link>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</link>
+      <link>/post/how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</link>
       <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/06/03/2019-06-03-how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</guid>
+      <guid>/post/how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/</guid>
       <description>Introduction The NY Times recently published an article showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The authors Josh Katz and K.K. Rebbeca Lai faceted the graph by season, and also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with the all-time low 5.</description>
     </item>
     
