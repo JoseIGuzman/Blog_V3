@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <title>
+    
+    
+     Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks 
+    
+  </title>
+  <link rel="canonical" href="/post/mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks/">
+
+  <link rel="stylesheet" href="/css/fonts.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="/">Jose Guzman Data Blog</a></h1>
+  <ul>
+    
+    <li><a href="/">Home</a></li>
+    
+    <li><a href="https://github.com/JoseIGuzman">GitHub</a></li>
+    
+    <li><a href="https://www.linkedin.com/in/jignacioguz">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/joseignacioguz">Twitter</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks </h1>
+
+  <div id=sub-header>
+    Jose Guzman · 2019/08/12 · 8 minute read
+  </div>
+
+  <div class="entry-content">
+    
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than $125 billion in damage. In Harris County alone Hurricane Harvey damaged 204,000 homes and apartment buildings. Many Houstonians still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parents home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston.</p>
+<p>I wanted to visualize how Hurricane Harvey affected different areas in Houston. For this blog, I used FEMA data of renter and homeowner individual assistance applications, as well as United States Geological Survey (USGS) recorded high-water mark points to create an interactive map of Harris County. The City of Houston, working with consulting groups like January Advisors have mapped out different aspects of Harvey damage, using City data of buildings damaged, monetary loss, debris removals, and 911 and 311 calls. The FEMA data I used added to the story, allowing me to expand the data outside of Houston City limits to get a sense of the damage in Harris County. I also displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane water relate to the number of applications in each zip code within the County.</p>
+<pre class="r"><code># library for loading data
+library(readr)
+# libraries for Cleaning Data
+library(tidyverse)
+library(janitor)
+# libraries for map
+library(tidycensus)
+library(widgetframe)
+library(htmltools)
+library(leaflet)
+library(leaflet.extras)
+library(sf)</code></pre>
+<pre class="r"><code>str(FEMA_Claims_Owners)</code></pre>
+<pre><code>## Classes &#39;spec_tbl_df&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 27958 obs. of  23 variables:
+##  $ Disaster                                         : num  4344 4344 4344 4344 4344 ...
+##  $ State                                            : chr  &quot;CA&quot; &quot;CA&quot; &quot;CA&quot; &quot;CA&quot; ...
+##  $ County                                           : chr  &quot;Butte (County)&quot; &quot;Butte (County)&quot; &quot;Butte (County)&quot; &quot;Butte (County)&quot; ...
+##  $ City                                             : chr  &quot;BANGOR&quot; &quot;BERRY CREEK&quot; &quot;BIGGS&quot; &quot;CHICO&quot; ...
+##  $ Zip Code                                         : num  95914 95916 95917 95926 95927 ...
+##  $ Valid Registrations                              : num  54 2 10 66 1 65 55 1 12 2 ...
+##  $ Average FEMA Inspected Damage                    : num  48015 0 0 0 0 ...
+##  $ Total Inspected                                  : num  27 1 5 21 1 22 14 1 3 2 ...
+##  $ Total Damage                                     : num  1296415 0 0 0 0 ...
+##  $ No FEMA Inspected Damage                         : num  7 1 5 21 1 22 14 1 3 2 ...
+##  $ FEMA Inspected Damage between $1 and $10,000     : num  2 0 0 0 0 0 0 0 0 0 ...
+##  $ FEMA Inspected Damage between $10,001 and $20,000: num  1 0 0 0 0 0 0 0 0 0 ...
+##  $ FEMA Inspected Damage between $20,001 and $30,000: num  5 0 0 0 0 0 0 0 0 0 ...
+##  $ FEMA Inspected Damage &gt; $30,000                  : num  12 0 0 0 0 0 0 0 0 0 ...
+##  $ Approved for FEMA Assistance                     : num  19 0 1 3 0 5 2 0 1 0 ...
+##  $ Total Approved IHP Amount                        : chr  &quot;407336.29&quot; &quot;$0.00&quot; &quot;500&quot; &quot;1500&quot; ...
+##  $ Repair/Replace Amount                            : chr  &quot;344897.39&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Rental Amount                                    : chr  &quot;29154&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Other Needs Amount                               : chr  &quot;33284.9&quot; &quot;$0.00&quot; &quot;500&quot; &quot;1500&quot; ...
+##  $ Approved between $1 and $10,000                  : num  6 0 1 3 0 5 2 0 1 0 ...
+##  $ Approved between $10,001 and $25,000             : num  2 0 0 0 0 0 0 0 0 0 ...
+##  $ Approved between $25,001 and Max                 : num  11 0 0 0 0 0 0 0 0 0 ...
+##  $ Total Max Grants                                 : num  8 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   Disaster = col_double(),
+##   ..   State = col_character(),
+##   ..   County = col_character(),
+##   ..   City = col_character(),
+##   ..   `Zip Code` = col_double(),
+##   ..   `Valid Registrations` = col_double(),
+##   ..   `Average FEMA Inspected Damage` = col_double(),
+##   ..   `Total Inspected` = col_double(),
+##   ..   `Total Damage` = col_double(),
+##   ..   `No FEMA Inspected Damage` = col_double(),
+##   ..   `FEMA Inspected Damage between $1 and $10,000` = col_double(),
+##   ..   `FEMA Inspected Damage between $10,001 and $20,000` = col_double(),
+##   ..   `FEMA Inspected Damage between $20,001 and $30,000` = col_double(),
+##   ..   `FEMA Inspected Damage &gt; $30,000` = col_double(),
+##   ..   `Approved for FEMA Assistance` = col_double(),
+##   ..   `Total Approved IHP Amount` = col_character(),
+##   ..   `Repair/Replace Amount` = col_character(),
+##   ..   `Rental Amount` = col_character(),
+##   ..   `Other Needs Amount` = col_character(),
+##   ..   `Approved between $1 and $10,000` = col_double(),
+##   ..   `Approved between $10,001 and $25,000` = col_double(),
+##   ..   `Approved between $25,001 and Max` = col_double(),
+##   ..   `Total Max Grants` = col_double()
+##   .. )</code></pre>
+<pre class="r"><code>str(FEMA_Claims_Renters)</code></pre>
+<pre><code>## Classes &#39;spec_tbl_df&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 22332 obs. of  20 variables:
+##  $ Disaster                            : num  4332 4332 4332 4332 4332 ...
+##  $ State                               : chr  &quot;TX&quot; &quot;TX&quot; &quot;TX&quot; &quot;TX&quot; ...
+##  $ County                              : chr  &quot;Aransas (County)&quot; &quot;Aransas (County)&quot; &quot;Aransas (County)&quot; &quot;Aransas (County)&quot; ...
+##  $ City                                : chr  &quot;ARANSAS PASS&quot; &quot;BISHOP&quot; &quot;CEDAR PARK&quot; &quot;CITY BY THE SEA&quot; ...
+##  $ Zip Code                            : num  78336 78343 78613 78336 78934 ...
+##  $ Valid Registrations                 : num  255 1 1 1 1 1 1 1 2 210 ...
+##  $ Total Inspected                     : num  232 0 0 1 1 1 0 1 1 178 ...
+##  $ Inspected with No Damage            : num  114 0 0 1 1 1 0 1 1 116 ...
+##  $ Total with Moderate Damage          : num  92 0 0 0 0 0 0 0 0 57 ...
+##  $ Total with Major Damage             : num  26 0 0 0 0 0 0 0 0 5 ...
+##  $ Total with Substantial Damage       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Approved for FEMA Assistance        : num  172 0 0 0 0 1 0 1 1 129 ...
+##  $ Total Approved IHP Amount           : chr  &quot;$444,220.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Repair/Replace Amount               : chr  &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Rental Amount                       : chr  &quot;$205,254.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Other Needs Amount                  : chr  &quot;$238,966.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; &quot;$0.00&quot; ...
+##  $ Approved between $1 and $10,000     : num  168 0 0 0 0 1 0 1 1 127 ...
+##  $ Approved between $10,001 and $25,000: num  4 0 0 0 0 0 0 0 0 2 ...
+##  $ Approved between $25,001 and Max    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Total Max Grants                    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, &quot;problems&quot;)=Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 1 obs. of  5 variables:
+##   ..$ row     : int 4070
+##   ..$ col     : chr &quot;Total with Major Damage&quot;
+##   ..$ expected: chr &quot;no trailing characters&quot;
+##   ..$ actual  : chr &quot;,029&quot;
+##   ..$ file    : chr &quot;&#39;/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/Renters.csv&#39;&quot;
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   Disaster = col_double(),
+##   ..   State = col_character(),
+##   ..   County = col_character(),
+##   ..   City = col_character(),
+##   ..   `Zip Code` = col_double(),
+##   ..   `Valid Registrations` = col_number(),
+##   ..   `Total Inspected` = col_double(),
+##   ..   `Inspected with No Damage` = col_double(),
+##   ..   `Total with Moderate Damage` = col_number(),
+##   ..   `Total with Major Damage` = col_double(),
+##   ..   `Total with Substantial Damage` = col_double(),
+##   ..   `Approved for FEMA Assistance` = col_double(),
+##   ..   `Total Approved IHP Amount` = col_character(),
+##   ..   `Repair/Replace Amount` = col_character(),
+##   ..   `Rental Amount` = col_character(),
+##   ..   `Other Needs Amount` = col_character(),
+##   ..   `Approved between $1 and $10,000` = col_number(),
+##   ..   `Approved between $10,001 and $25,000` = col_double(),
+##   ..   `Approved between $25,001 and Max` = col_double(),
+##   ..   `Total Max Grants` = col_double()
+##   .. )</code></pre>
+<pre class="r"><code>#clean up headers 
+FEMA_Claims_Owners &lt;- clean_names(FEMA_Claims_Owners, &quot;lower_camel&quot;)
+FEMA_Claims_Renters &lt;- clean_names(FEMA_Claims_Renters, &quot;lower_camel&quot;)</code></pre>
+<pre class="r"><code>#remove &quot;(County) from County column
+FEMA_Claims_Owners$county &lt;- str_sub(FEMA_Claims_Owners$county,1,-10)
+FEMA_Claims_Renters$county &lt;- str_sub(FEMA_Claims_Renters$county, 1,-10)</code></pre>
+<pre class="r"><code>#create totalDamage column for renters
+FEMA_Claims_Renters &lt;- FEMA_Claims_Renters %&gt;%
+                       mutate(totalDamage = totalWithModerateDamage 
+                                          + totalWithModerateDamage 
+                                          + totalWithSubstantialDamage)</code></pre>
+<pre class="r"><code>#Add OwnerorRenter columns
+FEMA_Claims_Renters$OwnerorRenter &lt;- &quot;Renter&quot;
+FEMA_Claims_Owners$OwnerorRenter &lt;- &quot;Owner&quot;</code></pre>
+<pre class="r"><code>#select owner and renter columns 
+FEMA_Selected_Owners &lt;- FEMA_Claims_Owners %&gt;% 
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
+FEMA_Selected_Renters &lt;- FEMA_Claims_Renters %&gt;%
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)</code></pre>
+<pre class="r"><code># binding tables together
+Selected_OwnersandRenters &lt;- bind_rows(FEMA_Selected_Owners, FEMA_Selected_Renters)
+
+#Filter table
+Selected_OwnersandRenters &lt;- Selected_OwnersandRenters %&gt;%
+  filter(disaster == 4332, county == &quot;Harris&quot;)</code></pre>
+</div>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="/post/how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph/">&laquo; How (I Think) They Made It: New York Times Game of Thrones Line Graph</a>
+    
+    
+  </div>
+</section>
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+  
+  
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

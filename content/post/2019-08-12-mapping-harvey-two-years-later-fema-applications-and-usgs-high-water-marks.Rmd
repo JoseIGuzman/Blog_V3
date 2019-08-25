@@ -1,0 +1,100 @@
+---
+title: 'Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks'
+author: Jose Guzman
+date: '2019-08-12'
+slug: mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks
+categories:
+  - R
+  - mapping
+tags:
+  - Data Visualization
+  - R
+---
+
+## Introduction
+
+Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than $125 billion in damage. In Harris County alone Hurricane Harvey damaged 204,000 homes and apartment buildings. Many Houstonians still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parents home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston. 
+
+I wanted to visualize how Hurricane Harvey affected different areas in Houston. For this blog, I used FEMA data of renter and homeowner individual assistance applications, as well as United States Geological Survey (USGS) recorded high-water mark points to create an interactive map of Harris County. The City of Houston, working with consulting groups like January Advisors have mapped out different aspects of Harvey damage, using City data of buildings damaged, monetary loss, debris removals, and 911 and 311 calls. The FEMA data I used added to the story, allowing me to expand the data outside of Houston City limits to get a sense of the damage in Harris County. I also displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane  water relate to the number of applications in each zip code within the County.
+
+```{r message = FALSE}
+# library for loading data
+library(readr)
+# libraries for Cleaning Data
+library(tidyverse)
+library(janitor)
+# libraries for map
+library(tidycensus)
+library(widgetframe)
+library(htmltools)
+library(leaflet)
+library(leaflet.extras)
+library(sf)
+```
+
+```{r message = FALSE, include=FALSE}
+High_Water_Marks <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/USGSHWMs.csv", col_types = cols(elev_ft = col_number(), 
+                                                      height_above_gnd = col_number(), latitude = col_number(), 
+                                                      longitude = col_number()))
+
+FEMA_Claims_Owners <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/owners.csv")
+FEMA_Claims_Renters <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/Renters.csv")
+
+```
+
+```{r}
+str(FEMA_Claims_Owners)
+```
+
+```{r}
+str(FEMA_Claims_Renters)
+```
+
+```{r}
+#clean up headers 
+FEMA_Claims_Owners <- clean_names(FEMA_Claims_Owners, "lower_camel")
+FEMA_Claims_Renters <- clean_names(FEMA_Claims_Renters, "lower_camel")
+```
+
+```{r}
+#remove "(County) from County column
+FEMA_Claims_Owners$county <- str_sub(FEMA_Claims_Owners$county,1,-10)
+FEMA_Claims_Renters$county <- str_sub(FEMA_Claims_Renters$county, 1,-10)
+```
+
+```{r}
+#create totalDamage column for renters
+FEMA_Claims_Renters <- FEMA_Claims_Renters %>%
+                       mutate(totalDamage = totalWithModerateDamage 
+                                          + totalWithModerateDamage 
+                                          + totalWithSubstantialDamage)
+```
+
+```{r}
+#Add OwnerorRenter columns
+FEMA_Claims_Renters$OwnerorRenter <- "Renter"
+FEMA_Claims_Owners$OwnerorRenter <- "Owner"
+```
+
+```{r}
+#select owner and renter columns 
+FEMA_Selected_Owners <- FEMA_Claims_Owners %>% 
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
+FEMA_Selected_Renters <- FEMA_Claims_Renters %>%
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
+```
+
+```{r}
+# binding tables together
+Selected_OwnersandRenters <- bind_rows(FEMA_Selected_Owners, FEMA_Selected_Renters)
+
+#Filter table
+Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
+  filter(disaster == 4332, county == "Harris")
+```
+
+```{r include=FALSE}
+#Get Census spatial data
+census_api_key("c0395a78d05485992fb41f09ca042c9c564a049e")
+```
+

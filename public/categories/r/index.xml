@@ -6,10 +6,19 @@
     <description>Recent content in R on Jose Guzman Data Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 03 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 12 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks</title>
+      <link>/post/mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks/</link>
+      <pubDate>Mon, 12 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks/</guid>
+      <description>Introduction Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than $125 billion in damage. In Harris County alone Hurricane Harvey damaged 204,000 homes and apartment buildings. Many Houstonians still recall how they, their families, or friends lost their homes, their cars, or businesses.</description>
+    </item>
     
     <item>
       <title>How (I Think) They Made It: New York Times Game of Thrones Line Graph</title>
