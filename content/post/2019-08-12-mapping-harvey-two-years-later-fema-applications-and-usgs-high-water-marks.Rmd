@@ -30,6 +30,7 @@ library(htmltools)
 library(leaflet)
 library(leaflet.extras)
 library(sf)
+
 ```
 
 ```{r message = FALSE, include=FALSE}
@@ -39,7 +40,6 @@ High_Water_Marks <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Versio
 
 FEMA_Claims_Owners <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/owners.csv")
 FEMA_Claims_Renters <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/Renters.csv")
-
 ```
 
 ```{r}
