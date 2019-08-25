@@ -1,7 +1,7 @@
 ---
 title: 'Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks'
 author: Jose Guzman
-date: '2019-08-12'
+date: '2019-08-25'
 slug: mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks
 categories:
   - R
@@ -43,14 +43,6 @@ FEMA_Claims_Renters <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Ver
 ```
 
 ```{r}
-str(FEMA_Claims_Owners)
-```
-
-```{r}
-str(FEMA_Claims_Renters)
-```
-
-```{r}
 #clean up headers 
 FEMA_Claims_Owners <- clean_names(FEMA_Claims_Owners, "lower_camel")
 FEMA_Claims_Renters <- clean_names(FEMA_Claims_Renters, "lower_camel")
@@ -88,7 +80,6 @@ FEMA_Selected_Renters <- FEMA_Claims_Renters %>%
 # binding tables together
 Selected_OwnersandRenters <- bind_rows(FEMA_Selected_Owners, FEMA_Selected_Renters)
 
-#Filter table
 Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
   filter(disaster == 4332, county == "Harris")
 ```
@@ -98,3 +89,77 @@ Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
 census_api_key("c0395a78d05485992fb41f09ca042c9c564a049e")
 ```
 
+```{r}
+zip_codes_us <- get_acs(geography = "zip code tabulation area", variables = "B00002_001", geometry = TRUE)
+```
+```{R}
+#join FEMA data and group by zip code. 
+Selected_OwnersandRenters$zipCode <- as.character(Selected_OwnersandRenters$zipCode)
+
+#Group Zip Codes 
+FEMA_grouped <- Selected_OwnersandRenters %>% 
+                         group_by(zipCode, city) %>%
+                         summarise(sumvalidregistrations = sum(validRegistrations), 
+                                   sumapproved = sum(approvedForFemaAssistance)) %>%
+                                   mutate(Percentageapproved = round(sumapproved/sumvalidregistrations, 2))
+
+FEMA_zipcodes_grouped <- left_join(FEMA_grouped, zip_codes_us,  by = c("zipCode" = "GEOID"))
+```
+
+```{r}
+rm(zip_codes_us)
+```
+
+```{r}
+#drop NA values
+FEMA_zipcodes_grouped <- FEMA_zipcodes_grouped %>%
+  drop_na()
+
+#filter by removing data in lower percentiles
+FEMA_zipcodes_grouped <- FEMA_zipcodes_grouped %>% filter(sumvalidregistrations > 25)
+
+FEMA_zipcodes_grouped$geometry <- st_transform(FEMA_zipcodes_grouped$geometry, 4326)
+```
+
+```{r}
+#create label column for zip codes, Pantries, 
+FEMA_zipcodes_grouped$label <- paste("<p> Zip Code:", FEMA_zipcodes_grouped$zipCode,"</P>",
+                                     "<p> City:", FEMA_zipcodes_grouped$city,"</P>",
+                                     "<p> Total Registrations:", FEMA_zipcodes_grouped$sumvalidregistrations,"</P>",
+                                     "<p> Total approved:", FEMA_zipcodes_grouped$sumapproved, "</P>", 
+                                     "<p> Percent approved:", FEMA_zipcodes_grouped$Percentageapproved, "</P>"
+                                     )
+```
+
+```{r}
+# create color scheme 
+pal <- colorNumeric("Reds", domain = FEMA_zipcodes_grouped$sumvalidregistrations, n = 4)
+
+#create Map
+map_Fema <- leaflet() %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+  setView(lng=-95.310329, lat=29.7752, zoom = 10) %>%
+  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
+             group = "High Water Marks",
+             intensity = High_Water_Marks$elev_ft, radius = 10, max = 0.3, blur = 10) %>%
+  addPolygons(data = FEMA_zipcodes_grouped$geometry, weight = 0.5, smooth = 1.5, opacity = .3,
+              fillColor = pal(FEMA_zipcodes_grouped$sumvalidregistrations),
+              fillOpacity = .5,
+              popup = lapply(FEMA_zipcodes_grouped$label, HTML)) %>%
+  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
+             group = "High Water Marks",
+             intensity = High_Water_Marks$elev_ft, radius = 15, max = 0.5) %>%
+  addLayersControl(
+    overlayGroups =c("High Water Marks"),
+    options = layersControlOptions(collapsed=FALSE)
+  ) %>% 
+  hideGroup("High Water Marks") %>%
+  addLegend("bottomright", pal = pal, values = FEMA_zipcodes_grouped$sumvalidregistrations,
+            title = "FEMA Valid Registrations",
+            opacity = 1
+  )
+```
+
+```{r}
+map_Fema
+```
