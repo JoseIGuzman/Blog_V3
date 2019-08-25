@@ -89,7 +89,7 @@ Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
 census_api_key("c0395a78d05485992fb41f09ca042c9c564a049e")
 ```
 
-```{r}
+```{r include=FALSE}
 zip_codes_us <- get_acs(geography = "zip code tabulation area", variables = "B00002_001", geometry = TRUE)
 ```
 ```{R}
@@ -161,5 +161,5 @@ map_Fema <- leaflet() %>%
 ```
 
 ```{r}
-map_Fema
+frameWidget(map_Fema)
 ```
