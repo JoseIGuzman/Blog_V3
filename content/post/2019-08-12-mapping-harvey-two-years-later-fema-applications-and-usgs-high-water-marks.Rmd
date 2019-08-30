@@ -13,9 +13,13 @@ tags:
 
 ## Introduction
 
-Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than $125 billion in damage. In Harris County alone Hurricane Harvey damaged 204,000 homes and apartment buildings. Many Houstonians still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parents home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston. 
+Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than [$125 billion](https://www.nhc.noaa.gov/news/UpdatedCostliest.pdf) in damage, tying with Huricane Katrina as the costliest storm in U.S. history. In Harris County alone Hurricane Harvey damaged [204,000 homes and apartment buildings](https://www.houstonchronicle.com/news/article/In-Harvey-s-deluge-most-damaged-homes-were-12794820.php). Many Texans still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parent's home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston. 
 
-I wanted to visualize how Hurricane Harvey affected different areas in Houston. For this blog, I used FEMA data of renter and homeowner individual assistance applications, as well as United States Geological Survey (USGS) recorded high-water mark points to create an interactive map of Harris County. The City of Houston, working with consulting groups like January Advisors have mapped out different aspects of Harvey damage, using City data of buildings damaged, monetary loss, debris removals, and 911 and 311 calls. The FEMA data I used added to the story, allowing me to expand the data outside of Houston City limits to get a sense of the damage in Harris County. I also displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane  water relate to the number of applications in each zip code within the County.
+I wanted to visualize how Hurricane Harvey affected southern the Texas Coast and the greater Houston area. For this blog, I used [FEMA data](https://www.fema.gov/media-library/assets/documents/34758) of renter and homeowner individual assistance applications, as well as United States [Geological Survey (USGS)](https://stn.wim.usgs.gov/fev/#HarveyAug2017) recorded high-water mark points to create an interactive map. I displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane  water relate to the number of FEMA registrations in each zip code affected by Harvey. 
+
+## Data Manipulation 
+
+The FEMA Excel spreadsheet was separated by tables with owner and renter registrations.I added the libraries used to clean the data and create the map, loaded the data, cleaned column names, and created a "total amounts" column for the renters table by adding moderate, major, and substantial damage columns. 
 
 ```{r message = FALSE}
 # library for loading data
@@ -28,9 +32,7 @@ library(tidycensus)
 library(widgetframe)
 library(htmltools)
 library(leaflet)
-library(leaflet.extras)
 library(sf)
-
 ```
 
 ```{r message = FALSE, include=FALSE}
@@ -40,6 +42,14 @@ High_Water_Marks <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Versio
 
 FEMA_Claims_Owners <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/owners.csv")
 FEMA_Claims_Renters <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Harvey_Map_Data/Renters.csv")
+```
+
+```{r}
+head(FEMA_Claims_Owners, 5)
+```
+
+```{r}
+head(FEMA_Claims_Renters, 5)
 ```
 
 ```{r}
@@ -54,35 +64,35 @@ FEMA_Claims_Owners$county <- str_sub(FEMA_Claims_Owners$county,1,-10)
 FEMA_Claims_Renters$county <- str_sub(FEMA_Claims_Renters$county, 1,-10)
 ```
 
-```{r}
+```{r tidy= TRUE}
 #create totalDamage column for renters
 FEMA_Claims_Renters <- FEMA_Claims_Renters %>%
                        mutate(totalDamage = totalWithModerateDamage 
-                                          + totalWithModerateDamage 
+                                          + totalWithMajorDamage 
                                           + totalWithSubstantialDamage)
 ```
 
-```{r}
-#Add OwnerorRenter columns
-FEMA_Claims_Renters$OwnerorRenter <- "Renter"
-FEMA_Claims_Owners$OwnerorRenter <- "Owner"
-```
-
-```{r}
+```{r tidy= TRUE}
 #select owner and renter columns 
 FEMA_Selected_Owners <- FEMA_Claims_Owners %>% 
-  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance)
 FEMA_Selected_Renters <- FEMA_Claims_Renters %>%
-  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
+  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance)
 ```
 
-```{r}
+I then selected the columns "disaster", "state", "county", "city", "zipCode", "validRegistrations", "totalInspected"", "totalDamage"", and "approvedForFemaAssistance" and combined the two tables using the `bind_rows` function. After binding the tables I filtered by the disaster number 4332, which represents [Huricane Harvey](https://www.fema.gov/disaster/4332). 
+
+```{r tidy= TRUE}
 # binding tables together
 Selected_OwnersandRenters <- bind_rows(FEMA_Selected_Owners, FEMA_Selected_Renters)
 
 Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
-  filter(disaster == 4332, county == "Harris")
+  filter(disaster == 4332)
 ```
+
+## Creating the Map
+
+The `tidycensus` R package allows users to interface with the US Census data APIs and return tidyverse-ready data frames. I needed to request an API key and use the `census_api_key` function to access the data. I set the "geometry"" argument as TRUE to get simple feature geometry of U.S. Zip Codes. I then grouped the data by Zip Code and city, summarised renter and owner registrations, approvals, and added a column to show approval percent. 
 
 ```{r include=FALSE}
 #Get Census spatial data
@@ -92,21 +102,22 @@ census_api_key("c0395a78d05485992fb41f09ca042c9c564a049e")
 ```{r include=FALSE}
 zip_codes_us <- get_acs(geography = "zip code tabulation area", variables = "B00002_001", geometry = TRUE)
 ```
-```{R}
+
+```{r tidy= TRUE}
 #join FEMA data and group by zip code. 
 Selected_OwnersandRenters$zipCode <- as.character(Selected_OwnersandRenters$zipCode)
 
 #Group Zip Codes 
-FEMA_grouped <- Selected_OwnersandRenters %>% 
+FEMA_zipcodes_grouped <- Selected_OwnersandRenters %>% 
                          group_by(zipCode, city) %>%
                          summarise(sumvalidregistrations = sum(validRegistrations), 
-                                   sumapproved = sum(approvedForFemaAssistance)) %>%
-                                   mutate(Percentageapproved = round(sumapproved/sumvalidregistrations, 2))
+                         sumapproved = sum(approvedForFemaAssistance)) %>%
+                         mutate(Percentageapproved = round(sumapproved/sumvalidregistrations, 2))
 
-FEMA_zipcodes_grouped <- left_join(FEMA_grouped, zip_codes_us,  by = c("zipCode" = "GEOID"))
+FEMA_zipcodes_grouped <- inner_join(FEMA_zipcodes_grouped, zip_codes_us,  by = c("zipCode" = "GEOID"))
 ```
 
-```{r}
+```{r include = FALSE}
 rm(zip_codes_us)
 ```
 
@@ -115,51 +126,71 @@ rm(zip_codes_us)
 FEMA_zipcodes_grouped <- FEMA_zipcodes_grouped %>%
   drop_na()
 
-#filter by removing data in lower percentiles
+#filter by removing zip codes with low number of registrations
 FEMA_zipcodes_grouped <- FEMA_zipcodes_grouped %>% filter(sumvalidregistrations > 25)
 
 FEMA_zipcodes_grouped$geometry <- st_transform(FEMA_zipcodes_grouped$geometry, 4326)
 ```
 
-```{r}
-#create label column for zip codes, Pantries, 
+Before adding the code for the map I created label columns to be able to display the data in the map.
+
+```{r tidy = TRUE}
+#create label column
 FEMA_zipcodes_grouped$label <- paste("<p> Zip Code:", FEMA_zipcodes_grouped$zipCode,"</P>",
-                                     "<p> City:", FEMA_zipcodes_grouped$city,"</P>",
-                                     "<p> Total Registrations:", FEMA_zipcodes_grouped$sumvalidregistrations,"</P>",
-                                     "<p> Total approved:", FEMA_zipcodes_grouped$sumapproved, "</P>", 
-                                     "<p> Percent approved:", FEMA_zipcodes_grouped$Percentageapproved, "</P>"
-                                     )
+                                     "<p> <strong>City:</strong>", FEMA_zipcodes_grouped$city,"</P>",
+                                     "<p> <strong>Total Registrations:</strong>", FEMA_zipcodes_grouped$sumvalidregistrations,"</P>",
+                                     "<p> <strong>Total approved:</strong>", FEMA_zipcodes_grouped$sumapproved, "</P>", 
+                                     "<p> <strong>Percent approved:</strong>", FEMA_zipcodes_grouped$Percentageapproved, "</P>")
 ```
 
-```{r}
-# create color scheme 
-pal <- colorNumeric("Reds", domain = FEMA_zipcodes_grouped$sumvalidregistrations, n = 4)
+## The Leaflet Package
+
+The `leaflet` package makes it easy to create interactive maps by integrating R with the Leaflet open-source JavaScript library. Before adding the functions for the map I made a couple of color palette objects, one for symbolizing the number of FEMA valid registrations, and another for symbolizing the high water marks in terms of elevation feet. 
+
+The first step to create a leaflet map is to call the `leaflet()` function to create a map widget. The next step is to add features, such as `addProviderTiles()` to select a basemap, `addCircles()` to create circles for the high water marks, and `addPolygons()` for the Zip code geometries. The `popup` argument allows users to select a Zip Code to see the label information. I applied the `addLegend()` function to add a legend symbolizing the FEMA number of valid registrations, and `addLayersControl()` to be able to show and hide layers.
+
+```{r tidy= TRUE}
+# create color scheme for registrations and high water mark elevation
+pal <- colorNumeric("YlOrRd", domain = FEMA_zipcodes_grouped$sumvalidregistrations, n = 4)
+pal2 <- colorNumeric(c("skyblue", "steelblue2", "royalblue1", "royalblue2"), domain = High_Water_Marks$elev_ft, n = 4)
 
 #create Map
 map_Fema <- leaflet() %>%
-  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-  setView(lng=-95.310329, lat=29.7752, zoom = 10) %>%
-  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  setView(lng=-95.3103, lat=29.7752, zoom = 10) %>%
+  addCircles(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
              group = "High Water Marks",
-             intensity = High_Water_Marks$elev_ft, radius = 10, max = 0.3, blur = 10) %>%
-  addPolygons(data = FEMA_zipcodes_grouped$geometry, weight = 0.5, smooth = 1.5, opacity = .3,
+             fill = TRUE,
+             stroke = TRUE,
+             color = pal2(High_Water_Marks$elev_ft),
+             weight = 3,
+             radius = 5,
+             opacity = .6,
+             fillOpacity = .6) %>%
+  addPolygons(data = FEMA_zipcodes_grouped$geometry, 
+              weight = 0.5, 
+              smooth = 1.5, 
+              opacity = .5,
               fillColor = pal(FEMA_zipcodes_grouped$sumvalidregistrations),
               fillOpacity = .5,
+              group = "FEMA Valid Registrations",
+              highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
               popup = lapply(FEMA_zipcodes_grouped$label, HTML)) %>%
-  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
-             group = "High Water Marks",
-             intensity = High_Water_Marks$elev_ft, radius = 15, max = 0.5) %>%
-  addLayersControl(
-    overlayGroups =c("High Water Marks"),
+  addLayersControl(overlayGroups =c("High Water Marks", "FEMA Valid Registrations"),
     options = layersControlOptions(collapsed=FALSE)
   ) %>% 
   hideGroup("High Water Marks") %>%
   addLegend("bottomright", pal = pal, values = FEMA_zipcodes_grouped$sumvalidregistrations,
             title = "FEMA Valid Registrations",
-            opacity = 1
+            opacity = .7
   )
 ```
+
+## The Map
+
+Although the data does not show the exact number of buildings damaged, FEMA registrations can be used as a proxy to find areas most affected by Hurricane Harvey. For example, the area around Zip Code 77084 in the city of Houston showed the largest number (12766) of valid registrations for FEMA grants. This Zip Code is located inside one of the reservoirs where storm water rose to historic levels, flooding thousands of homes. 
 
 ```{r}
 frameWidget(map_Fema)
 ```
+

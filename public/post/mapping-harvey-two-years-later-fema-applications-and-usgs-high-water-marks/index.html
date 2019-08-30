@@ -46,7 +46,7 @@
   <h1> Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks </h1>
 
   <div id=sub-header>
-    Jose Guzman · 2019/08/25 · 4 minute read
+    Jose Guzman · 2019/08/25 · 7 minute read
   </div>
 
   <div class="entry-content">
@@ -58,8 +58,12 @@
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than $125 billion in damage. In Harris County alone Hurricane Harvey damaged 204,000 homes and apartment buildings. Many Houstonians still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parents home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston.</p>
-<p>I wanted to visualize how Hurricane Harvey affected different areas in Houston. For this blog, I used FEMA data of renter and homeowner individual assistance applications, as well as United States Geological Survey (USGS) recorded high-water mark points to create an interactive map of Harris County. The City of Houston, working with consulting groups like January Advisors have mapped out different aspects of Harvey damage, using City data of buildings damaged, monetary loss, debris removals, and 911 and 311 calls. The FEMA data I used added to the story, allowing me to expand the data outside of Houston City limits to get a sense of the damage in Harris County. I also displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane water relate to the number of applications in each zip code within the County.</p>
+<p>Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than <a href="https://www.nhc.noaa.gov/news/UpdatedCostliest.pdf">$125 billion</a> in damage, tying with Huricane Katrina as the costliest storm in U.S. history. In Harris County alone Hurricane Harvey damaged <a href="https://www.houstonchronicle.com/news/article/In-Harvey-s-deluge-most-damaged-homes-were-12794820.php">204,000 homes and apartment buildings</a>. Many Texans still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parent’s home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston.</p>
+<p>I wanted to visualize how Hurricane Harvey affected southern the Texas Coast and the greater Houston area. For this blog, I used <a href="https://www.fema.gov/media-library/assets/documents/34758">FEMA data</a> of renter and homeowner individual assistance applications, as well as United States <a href="https://stn.wim.usgs.gov/fev/#HarveyAug2017">Geological Survey (USGS)</a> recorded high-water mark points to create an interactive map. I displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane water relate to the number of FEMA registrations in each zip code affected by Harvey.</p>
+</div>
+<div id="data-manipulation" class="section level2">
+<h2>Data Manipulation</h2>
+<p>The FEMA Excel spreadsheet was separated by tables with owner and renter registrations.I added the libraries used to clean the data and create the map, loaded the data, cleaned column names, and created a “total amounts” column for the renters table by adding moderate, major, and substantial damage columns.</p>
 <pre class="r"><code># library for loading data
 library(readr)
 # libraries for Cleaning Data
@@ -70,88 +74,122 @@ library(tidycensus)
 library(widgetframe)
 library(htmltools)
 library(leaflet)
-library(leaflet.extras)
 library(sf)</code></pre>
+<pre class="r"><code>head(FEMA_Claims_Owners, 5)</code></pre>
+<pre><code>## # A tibble: 5 x 23
+##   Disaster State County City  `Zip Code` `Valid Registra… `Average FEMA I…
+##      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1     4344 CA    Butte… BANG…      95914               54           48015.
+## 2     4344 CA    Butte… BERR…      95916                2               0 
+## 3     4344 CA    Butte… BIGGS      95917               10               0 
+## 4     4344 CA    Butte… CHICO      95926               66               0 
+## 5     4344 CA    Butte… CHICO      95927                1               0 
+## # … with 16 more variables: `Total Inspected` &lt;dbl&gt;, `Total Damage` &lt;dbl&gt;,
+## #   `No FEMA Inspected Damage` &lt;dbl&gt;, `FEMA Inspected Damage between $1
+## #   and $10,000` &lt;dbl&gt;, `FEMA Inspected Damage between $10,001 and
+## #   $20,000` &lt;dbl&gt;, `FEMA Inspected Damage between $20,001 and
+## #   $30,000` &lt;dbl&gt;, `FEMA Inspected Damage &gt; $30,000` &lt;dbl&gt;, `Approved for
+## #   FEMA Assistance` &lt;dbl&gt;, `Total Approved IHP Amount` &lt;chr&gt;,
+## #   `Repair/Replace Amount` &lt;chr&gt;, `Rental Amount` &lt;chr&gt;, `Other Needs
+## #   Amount` &lt;chr&gt;, `Approved between $1 and $10,000` &lt;dbl&gt;, `Approved
+## #   between $10,001 and $25,000` &lt;dbl&gt;, `Approved between $25,001 and
+## #   Max` &lt;dbl&gt;, `Total Max Grants` &lt;dbl&gt;</code></pre>
+<pre class="r"><code>head(FEMA_Claims_Renters, 5)</code></pre>
+<pre><code>## # A tibble: 5 x 20
+##   Disaster State County City  `Zip Code` `Valid Registra… `Total Inspecte…
+##      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1     4332 TX    Arans… ARAN…      78336              255              232
+## 2     4332 TX    Arans… BISH…      78343                1                0
+## 3     4332 TX    Arans… CEDA…      78613                1                0
+## 4     4332 TX    Arans… CITY…      78336                1                1
+## 5     4332 TX    Arans… COLU…      78934                1                1
+## # … with 13 more variables: `Inspected with No Damage` &lt;dbl&gt;, `Total with
+## #   Moderate Damage` &lt;dbl&gt;, `Total with Major Damage` &lt;dbl&gt;, `Total with
+## #   Substantial Damage` &lt;dbl&gt;, `Approved for FEMA Assistance` &lt;dbl&gt;,
+## #   `Total Approved IHP Amount` &lt;chr&gt;, `Repair/Replace Amount` &lt;chr&gt;,
+## #   `Rental Amount` &lt;chr&gt;, `Other Needs Amount` &lt;chr&gt;, `Approved between
+## #   $1 and $10,000` &lt;dbl&gt;, `Approved between $10,001 and $25,000` &lt;dbl&gt;,
+## #   `Approved between $25,001 and Max` &lt;dbl&gt;, `Total Max Grants` &lt;dbl&gt;</code></pre>
 <pre class="r"><code>#clean up headers 
 FEMA_Claims_Owners &lt;- clean_names(FEMA_Claims_Owners, &quot;lower_camel&quot;)
 FEMA_Claims_Renters &lt;- clean_names(FEMA_Claims_Renters, &quot;lower_camel&quot;)</code></pre>
 <pre class="r"><code>#remove &quot;(County) from County column
 FEMA_Claims_Owners$county &lt;- str_sub(FEMA_Claims_Owners$county,1,-10)
 FEMA_Claims_Renters$county &lt;- str_sub(FEMA_Claims_Renters$county, 1,-10)</code></pre>
-<pre class="r"><code>#create totalDamage column for renters
-FEMA_Claims_Renters &lt;- FEMA_Claims_Renters %&gt;%
-                       mutate(totalDamage = totalWithModerateDamage 
-                                          + totalWithModerateDamage 
-                                          + totalWithSubstantialDamage)</code></pre>
-<pre class="r"><code>#Add OwnerorRenter columns
-FEMA_Claims_Renters$OwnerorRenter &lt;- &quot;Renter&quot;
-FEMA_Claims_Owners$OwnerorRenter &lt;- &quot;Owner&quot;</code></pre>
-<pre class="r"><code>#select owner and renter columns 
-FEMA_Selected_Owners &lt;- FEMA_Claims_Owners %&gt;% 
-  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)
-FEMA_Selected_Renters &lt;- FEMA_Claims_Renters %&gt;%
-  select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance, OwnerorRenter)</code></pre>
+<pre class="r"><code># create totalDamage column for renters
+FEMA_Claims_Renters &lt;- FEMA_Claims_Renters %&gt;% mutate(totalDamage = totalWithModerateDamage + 
+    totalWithMajorDamage + totalWithSubstantialDamage)</code></pre>
+<pre class="r"><code># select owner and renter columns
+FEMA_Selected_Owners &lt;- FEMA_Claims_Owners %&gt;% select(disaster, state, county, 
+    city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance)
+FEMA_Selected_Renters &lt;- FEMA_Claims_Renters %&gt;% select(disaster, state, county, 
+    city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance)</code></pre>
+<p>I then selected the columns “disaster”, “state”, “county”, “city”, “zipCode”, “validRegistrations”, “totalInspected”“,”totalDamage“”, and “approvedForFemaAssistance” and combined the two tables using the <code>bind_rows</code> function. After binding the tables I filtered by the disaster number 4332, which represents <a href="https://www.fema.gov/disaster/4332">Huricane Harvey</a>.</p>
 <pre class="r"><code># binding tables together
 Selected_OwnersandRenters &lt;- bind_rows(FEMA_Selected_Owners, FEMA_Selected_Renters)
 
-Selected_OwnersandRenters &lt;- Selected_OwnersandRenters %&gt;%
-  filter(disaster == 4332, county == &quot;Harris&quot;)</code></pre>
-<pre class="r"><code>#join FEMA data and group by zip code. 
+Selected_OwnersandRenters &lt;- Selected_OwnersandRenters %&gt;% filter(disaster == 
+    4332)</code></pre>
+</div>
+<div id="creating-the-map" class="section level2">
+<h2>Creating the Map</h2>
+<p>The <code>tidycensus</code> R package allows users to interface with the US Census data APIs and return tidyverse-ready data frames. I needed to request an API key and use the <code>census_api_key</code> function to access the data. I set the “geometry”&quot; argument as TRUE to get simple feature geometry of U.S. Zip Codes. I then grouped the data by Zip Code and city, summarised renter and owner registrations, approvals, and added a column to show approval percent.</p>
+<pre class="r"><code># join FEMA data and group by zip code.
 Selected_OwnersandRenters$zipCode &lt;- as.character(Selected_OwnersandRenters$zipCode)
 
-#Group Zip Codes 
-FEMA_grouped &lt;- Selected_OwnersandRenters %&gt;% 
-                         group_by(zipCode, city) %&gt;%
-                         summarise(sumvalidregistrations = sum(validRegistrations), 
-                                   sumapproved = sum(approvedForFemaAssistance)) %&gt;%
-                                   mutate(Percentageapproved = round(sumapproved/sumvalidregistrations, 2))
+# Group Zip Codes
+FEMA_zipcodes_grouped &lt;- Selected_OwnersandRenters %&gt;% group_by(zipCode, city) %&gt;% 
+    summarise(sumvalidregistrations = sum(validRegistrations), sumapproved = sum(approvedForFemaAssistance)) %&gt;% 
+    mutate(Percentageapproved = round(sumapproved/sumvalidregistrations, 2))
 
-FEMA_zipcodes_grouped &lt;- left_join(FEMA_grouped, zip_codes_us,  by = c(&quot;zipCode&quot; = &quot;GEOID&quot;))</code></pre>
-<pre class="r"><code>rm(zip_codes_us)</code></pre>
+FEMA_zipcodes_grouped &lt;- inner_join(FEMA_zipcodes_grouped, zip_codes_us, by = c(zipCode = &quot;GEOID&quot;))</code></pre>
 <pre class="r"><code>#drop NA values
 FEMA_zipcodes_grouped &lt;- FEMA_zipcodes_grouped %&gt;%
   drop_na()
 
-#filter by removing data in lower percentiles
+#filter by removing zip codes with low number of registrations
 FEMA_zipcodes_grouped &lt;- FEMA_zipcodes_grouped %&gt;% filter(sumvalidregistrations &gt; 25)
 
 FEMA_zipcodes_grouped$geometry &lt;- st_transform(FEMA_zipcodes_grouped$geometry, 4326)</code></pre>
-<pre class="r"><code>#create label column for zip codes, Pantries, 
-FEMA_zipcodes_grouped$label &lt;- paste(&quot;&lt;p&gt; Zip Code:&quot;, FEMA_zipcodes_grouped$zipCode,&quot;&lt;/P&gt;&quot;,
-                                     &quot;&lt;p&gt; City:&quot;, FEMA_zipcodes_grouped$city,&quot;&lt;/P&gt;&quot;,
-                                     &quot;&lt;p&gt; Total Registrations:&quot;, FEMA_zipcodes_grouped$sumvalidregistrations,&quot;&lt;/P&gt;&quot;,
-                                     &quot;&lt;p&gt; Total approved:&quot;, FEMA_zipcodes_grouped$sumapproved, &quot;&lt;/P&gt;&quot;, 
-                                     &quot;&lt;p&gt; Percent approved:&quot;, FEMA_zipcodes_grouped$Percentageapproved, &quot;&lt;/P&gt;&quot;
-                                     )</code></pre>
-<pre class="r"><code># create color scheme 
-pal &lt;- colorNumeric(&quot;Reds&quot;, domain = FEMA_zipcodes_grouped$sumvalidregistrations, n = 4)
+<p>Before adding the code for the map I created label columns to be able to display the data in the map.</p>
+<pre class="r"><code># create label column
+FEMA_zipcodes_grouped$label &lt;- paste(&quot;&lt;p&gt; Zip Code:&quot;, FEMA_zipcodes_grouped$zipCode, 
+    &quot;&lt;/P&gt;&quot;, &quot;&lt;p&gt; &lt;strong&gt;City:&lt;/strong&gt;&quot;, FEMA_zipcodes_grouped$city, &quot;&lt;/P&gt;&quot;, 
+    &quot;&lt;p&gt; &lt;strong&gt;Total Registrations:&lt;/strong&gt;&quot;, FEMA_zipcodes_grouped$sumvalidregistrations, 
+    &quot;&lt;/P&gt;&quot;, &quot;&lt;p&gt; &lt;strong&gt;Total approved:&lt;/strong&gt;&quot;, FEMA_zipcodes_grouped$sumapproved, 
+    &quot;&lt;/P&gt;&quot;, &quot;&lt;p&gt; &lt;strong&gt;Percent approved:&lt;/strong&gt;&quot;, FEMA_zipcodes_grouped$Percentageapproved, 
+    &quot;&lt;/P&gt;&quot;)</code></pre>
+</div>
+<div id="the-leaflet-package" class="section level2">
+<h2>The Leaflet Package</h2>
+<p>The <code>leaflet</code> package makes it easy to create interactive maps by integrating R with the Leaflet open-source JavaScript library. Before adding the functions for the map I made a couple of color palette objects, one for symbolizing the number of FEMA valid registrations, and another for symbolizing the high water marks in terms of elevation feet.</p>
+<p>The first step to create a leaflet map is to call the <code>leaflet()</code> function to create a map widget. The next step is to add features, such as <code>addProviderTiles()</code> to select a basemap, <code>addCircles()</code> to create circles for the high water marks, and <code>addPolygons()</code> for the Zip code geometries. The <code>popup</code> argument allows users to select a Zip Code to see the label information. I applied the <code>addLegend()</code> function to add a legend symbolizing the FEMA number of valid registrations, and <code>addLayersControl()</code> to be able to show and hide layers.</p>
+<pre class="r"><code># create color scheme for registrations and high water mark elevation
+pal &lt;- colorNumeric(&quot;YlOrRd&quot;, domain = FEMA_zipcodes_grouped$sumvalidregistrations, 
+    n = 4)
+pal2 &lt;- colorNumeric(c(&quot;skyblue&quot;, &quot;steelblue2&quot;, &quot;royalblue1&quot;, &quot;royalblue2&quot;), 
+    domain = High_Water_Marks$elev_ft, n = 4)
 
-#create Map
-map_Fema &lt;- leaflet() %&gt;%
-  addProviderTiles(providers$Esri.WorldGrayCanvas) %&gt;%
-  setView(lng=-95.310329, lat=29.7752, zoom = 10) %&gt;%
-  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
-             group = &quot;High Water Marks&quot;,
-             intensity = High_Water_Marks$elev_ft, radius = 10, max = 0.3, blur = 10) %&gt;%
-  addPolygons(data = FEMA_zipcodes_grouped$geometry, weight = 0.5, smooth = 1.5, opacity = .3,
-              fillColor = pal(FEMA_zipcodes_grouped$sumvalidregistrations),
-              fillOpacity = .5,
-              popup = lapply(FEMA_zipcodes_grouped$label, HTML)) %&gt;%
-  addHeatmap(lng = High_Water_Marks$longitude, lat = High_Water_Marks$latitude, 
-             group = &quot;High Water Marks&quot;,
-             intensity = High_Water_Marks$elev_ft, radius = 15, max = 0.5) %&gt;%
-  addLayersControl(
-    overlayGroups =c(&quot;High Water Marks&quot;),
-    options = layersControlOptions(collapsed=FALSE)
-  ) %&gt;% 
-  hideGroup(&quot;High Water Marks&quot;) %&gt;%
-  addLegend(&quot;bottomright&quot;, pal = pal, values = FEMA_zipcodes_grouped$sumvalidregistrations,
-            title = &quot;FEMA Valid Registrations&quot;,
-            opacity = 1
-  )</code></pre>
+# create Map
+map_Fema &lt;- leaflet() %&gt;% addProviderTiles(providers$Esri.WorldTopoMap) %&gt;% 
+    setView(lng = -95.3103, lat = 29.7752, zoom = 10) %&gt;% addCircles(lng = High_Water_Marks$longitude, 
+    lat = High_Water_Marks$latitude, group = &quot;High Water Marks&quot;, fill = TRUE, 
+    stroke = TRUE, color = pal2(High_Water_Marks$elev_ft), weight = 3, radius = 5, 
+    opacity = 0.6, fillOpacity = 0.6) %&gt;% addPolygons(data = FEMA_zipcodes_grouped$geometry, 
+    weight = 0.5, smooth = 1.5, opacity = 0.5, fillColor = pal(FEMA_zipcodes_grouped$sumvalidregistrations), 
+    fillOpacity = 0.5, group = &quot;FEMA Valid Registrations&quot;, highlightOptions = highlightOptions(color = &quot;white&quot;, 
+        weight = 2, bringToFront = TRUE), popup = lapply(FEMA_zipcodes_grouped$label, 
+        HTML)) %&gt;% addLayersControl(overlayGroups = c(&quot;High Water Marks&quot;, &quot;FEMA Valid Registrations&quot;), 
+    options = layersControlOptions(collapsed = FALSE)) %&gt;% hideGroup(&quot;High Water Marks&quot;) %&gt;% 
+    addLegend(&quot;bottomright&quot;, pal = pal, values = FEMA_zipcodes_grouped$sumvalidregistrations, 
+        title = &quot;FEMA Valid Registrations&quot;, opacity = 0.7)</code></pre>
+</div>
+<div id="the-map" class="section level2">
+<h2>The Map</h2>
+<p>Although the data does not show the exact number of buildings damaged, FEMA registrations can be used as a proxy to find areas most affected by Hurricane Harvey. For example, the area around Zip Code 77084 in the city of Houston showed the largest number (12766) of valid registrations for FEMA grants. This Zip Code is located inside one of the reservoirs where storm water rose to historic levels, flooding thousands of homes.</p>
 <pre class="r"><code>frameWidget(map_Fema)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-08-12-mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks_files/figure-html//widgets/widget_unnamed-chunk-16.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-08-12-mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks_files/figure-html//widgets/widget_unnamed-chunk-17.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
   </div>

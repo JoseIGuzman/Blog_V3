@@ -1,7 +1,7 @@
 ---
 title: 'How (I Think) They Made It: New York Times Game of Thrones Line Graph'
 author: "Jose I Guzman"
-date: '2019-06-03'
+date: '2019-07-03'
 description: ''
 slug: how-i-think-they-made-it-new-york-times-game-of-thrones-line-graph
 tags:
@@ -18,7 +18,7 @@ categories: R
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The <em>NY Times</em> recently published an <a href="https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html">article</a> showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The authors Josh Katz and K.K. Rebbeca Lai faceted the graph by season, and also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with the all-time low 5.6 average rating for the show.</p>
+<p>The <em>NY Times</em> published an <a href="https://www.nytimes.com/interactive/2019/05/17/upshot/game-of-thrones-imdb-ratings.html">article</a> showing a line graph of IMBd average fan ratings of “Game of Thrones” (“GOT”) episodes over the seasons (as well as line graphs of other popular Tv shows). The authors Josh Katz and K.K. Rebbeca Lai faceted the graph by season, and also added labels with the names of some the episodes with the highest ratings, and one episode from the last season, “The Last of the Starks”, with the all-time low 5.6 average rating for the show.</p>
 <p>As you can read in the article, and if you watched the show, the general consensus is that the last season bombed. You can read more about why the last season was the least rated of the show. The purpose of this article is to share how I attempted to replicate this simple, but informative line graph. I’m a fan of the amazing work that the <em>NY Times</em> creates, and I’m always wondering about the work process and software that graphic designers and data experts use to create the data visualizations.</p>
 <p>This blog includes the data and code I used to recreate my own version of the line graph showing the average IMDb ratings for every episode of “Game of Thrones”. I’m not sure what program or sofware they used for this graph, but R is a great tool for creating data visualizations, especially with the <code>ggplot</code> package.</p>
 </div>
