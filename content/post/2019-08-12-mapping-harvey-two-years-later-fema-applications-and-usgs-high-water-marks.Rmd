@@ -1,5 +1,5 @@
 ---
-title: 'Mapping Harvey Two Years Later: FEMA applications and USGS High Water Marks'
+title: 'Mapping Hurricane Harvey Two Years Later'
 author: Jose Guzman
 date: '2019-08-25'
 slug: mapping-harvey-two-years-later-fema-applications-and-usgs-high-water-marks
@@ -13,9 +13,11 @@ tags:
 
 ## Introduction
 
-Two years have passed since Huricane Harvey hit the Texas coastline and the Greater Houston metropolitan area. Harvey stalled around the Houston area for days, pourring rain, overflowing rivers, and flooding homes. The hurricane caused more than [$125 billion](https://www.nhc.noaa.gov/news/UpdatedCostliest.pdf) in damage, tying with Huricane Katrina as the costliest storm in U.S. history. In Harris County alone Hurricane Harvey damaged [204,000 homes and apartment buildings](https://www.houstonchronicle.com/news/article/In-Harvey-s-deluge-most-damaged-homes-were-12794820.php). Many Texans still recall how they, their families, or friends lost their homes, their cars, or businesses. Harvey marked a before and after in the History of the city and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parent's home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to my parents house and saw streets filled with carpets,furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout Greater Houston. 
+Two years have passed since Huricane Harvey hit the Texas coastline and Houston area. Harvey stalled for days, pouring rain, overflowing rivers and reserviors, flooding thosands of homes. The hurricane caused more than [$125 billion](https://www.nhc.noaa.gov/news/UpdatedCostliest.pdf) in damage, tying with Huricane Katrina as the costliest storm in U.S. history. In Harris County alone Hurricane Harvey damaged [204,000 homes and apartment buildings](https://www.houstonchronicle.com/news/article/In-Harvey-s-deluge-most-damaged-homes-were-12794820.php). Many Texans still recall how they, their families, or friends lost their homes, their cars, or businesses to the storm. Harvey marked a before and after in the History of the state and the personal experiences of its residents. Some people where luckier than others, living in homes that were built just high enough for the water to stay in the streets. My parents’ home in the City of Katy, west of Houston was hit with minor roof leaks. After the rain subsided, I drove around neighborhoods close to their house and saw streets filled with carpets, furniture, gutted walls, torn fences, and stalled cars. The same story played out in neighborhoods throughout the city. 
 
-I wanted to visualize how Hurricane Harvey affected southern the Texas Coast and the greater Houston area. For this blog, I used [FEMA data](https://www.fema.gov/media-library/assets/documents/34758) of renter and homeowner individual assistance applications, as well as United States [Geological Survey (USGS)](https://stn.wim.usgs.gov/fev/#HarveyAug2017) recorded high-water mark points to create an interactive map. I displayed the FEMA data alongside the USGS dataset to show how areas with recorded high-water marks during the huricane  water relate to the number of FEMA registrations in each zip code affected by Harvey. 
+I wanted to visualize how Hurricane Harvey affected southern the Texas Coast and the Houston area. For this blog, I used [FEMA data](https://www.fema.gov/media-library/assets/documents/34758) of renter and homeowner individual assistance applications, as well as United States [Geological Survey (USGS)](https://stn.wim.usgs.gov/fev/#HarveyAug2017) recorded high-water mark data to create an interactive map. I displayed the FEMA data alongside the USGS data to show how areas with recorded high-water marks during the hurricane water relate to the number of FEMA registrations in each zip code affected by Harvey. 
+
+![](https://media.giphy.com/media/lok4pktE7Cf7y2zYy5/giphy.gif)
 
 ## Data Manipulation 
 
@@ -80,7 +82,7 @@ FEMA_Selected_Renters <- FEMA_Claims_Renters %>%
   select(disaster, state, county, city, zipCode, validRegistrations, totalInspected, totalDamage, approvedForFemaAssistance)
 ```
 
-I then selected the columns "disaster", "state", "county", "city", "zipCode", "validRegistrations", "totalInspected"", "totalDamage"", and "approvedForFemaAssistance" and combined the two tables using the `bind_rows` function. After binding the tables I filtered by the disaster number 4332, which represents [Huricane Harvey](https://www.fema.gov/disaster/4332). 
+I then selected the columns "disaster", "state", "county", "city", "zipCode", "validRegistrations", "totalInspected"", "totalDamage"", and "approvedForFemaAssistance" and combined the two tables using the `bind_rows` function. After binding the tables I filtered the table by disaster number 4332, which represents [Hurricane Harvey](https://www.fema.gov/disaster/4332). 
 
 ```{r tidy= TRUE}
 # binding tables together
@@ -92,7 +94,7 @@ Selected_OwnersandRenters <- Selected_OwnersandRenters %>%
 
 ## Creating the Map
 
-The `tidycensus` R package allows users to interface with the US Census data APIs and return tidyverse-ready data frames. I needed to request an API key and use the `census_api_key` function to access the data. I set the "geometry"" argument as TRUE to get simple feature geometry of U.S. Zip Codes. I then grouped the data by Zip Code and city, summarised renter and owner registrations, approvals, and added a column to show approval percent. 
+The `tidycensus` R package allows users to interface with the US Census data APIs and return tidyverse-ready dataframes. I needed to request an API key and use the `census_api_key` function to access the data. I set the "geometry"" argument as TRUE to get simple feature geometry of U.S. Zip Codes. I then grouped the data by Zip Code and city, summarised renter and owner registrations, approvals, and added a column to show approval percent. 
 
 ```{r include=FALSE}
 #Get Census spatial data
@@ -136,18 +138,18 @@ Before adding the code for the map I created label columns to be able to display
 
 ```{r tidy = TRUE}
 #create label column
-FEMA_zipcodes_grouped$label <- paste("<p> Zip Code:", FEMA_zipcodes_grouped$zipCode,"</P>",
+FEMA_zipcodes_grouped$label <- paste("<p> <strong>Zip Code:", FEMA_zipcodes_grouped$zipCode,"</P>",
                                      "<p> <strong>City:</strong>", FEMA_zipcodes_grouped$city,"</P>",
                                      "<p> <strong>Total Registrations:</strong>", FEMA_zipcodes_grouped$sumvalidregistrations,"</P>",
-                                     "<p> <strong>Total approved:</strong>", FEMA_zipcodes_grouped$sumapproved, "</P>", 
-                                     "<p> <strong>Percent approved:</strong>", FEMA_zipcodes_grouped$Percentageapproved, "</P>")
+                                     "<p> <strong>Total Approved:</strong>", FEMA_zipcodes_grouped$sumapproved, "</P>", 
+                                     "<p> <strong>Percent Approved:</strong>", FEMA_zipcodes_grouped$Percentageapproved * 100 , " % </P>")
 ```
 
 ## The Leaflet Package
 
 The `leaflet` package makes it easy to create interactive maps by integrating R with the Leaflet open-source JavaScript library. Before adding the functions for the map I made a couple of color palette objects, one for symbolizing the number of FEMA valid registrations, and another for symbolizing the high water marks in terms of elevation feet. 
 
-The first step to create a leaflet map is to call the `leaflet()` function to create a map widget. The next step is to add features, such as `addProviderTiles()` to select a basemap, `addCircles()` to create circles for the high water marks, and `addPolygons()` for the Zip code geometries. The `popup` argument allows users to select a Zip Code to see the label information. I applied the `addLegend()` function to add a legend symbolizing the FEMA number of valid registrations, and `addLayersControl()` to be able to show and hide layers.
+The first step to create the map is to call the `leaflet()` function, which creates a map widget. The next step is to add features, such as `addProviderTiles()` to select a basemap, `addCircles()` to create circles for the high water marks, and `addPolygons()` for the Zip code geometries. The `popup` argument allows users to select a Zip Code to see the label information. I applied the `addLegend()` function to add a legend symbolizing the FEMA number of valid registrations, and `addLayersControl()` to be able to show and hide layers.
 
 ```{r tidy= TRUE}
 # create color scheme for registrations and high water mark elevation
@@ -174,7 +176,6 @@ map_Fema <- leaflet() %>%
               fillColor = pal(FEMA_zipcodes_grouped$sumvalidregistrations),
               fillOpacity = .5,
               group = "FEMA Valid Registrations",
-              highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
               popup = lapply(FEMA_zipcodes_grouped$label, HTML)) %>%
   addLayersControl(overlayGroups =c("High Water Marks", "FEMA Valid Registrations"),
     options = layersControlOptions(collapsed=FALSE)
@@ -188,9 +189,22 @@ map_Fema <- leaflet() %>%
 
 ## The Map
 
-Although the data does not show the exact number of buildings damaged, FEMA registrations can be used as a proxy to find areas most affected by Hurricane Harvey. For example, the area around Zip Code 77084 in the city of Houston showed the largest number (12766) of valid registrations for FEMA grants. This Zip Code is located inside one of the reservoirs where storm water rose to historic levels, flooding thousands of homes. 
+Although the data does not show the exact number of buildings damaged, FEMA registrations can be used as a proxy to find the areas most affected by Hurricane Harvey. For example, the area around Zip Code 77084 in the city of Houston showed the largest number (12766) of valid registrations for FEMA grants. This Zip Code is located inside one of the reservoirs where storm water rose to historic levels, flooding thousands of homes. High water marks with the highest elevation in feet, represented by the darker blue dots, seem to be located in more rural and sparcely polulated areas between San Antonio and Austin.
+
 
 ```{r}
 frameWidget(map_Fema)
 ```
+
+
+**Sources:**
+
+*United States. Federal Emergency Management Agency. Housing Assistance Data. Washington, DC: FEMA, 2019.https://www.fema.gov/media-library/assets/documents/34758. Data retreived August 12, 2019.*
+
+*FEMA and the Federal Government cannot vouch for the data or analyses derived from these data after the data have been retrieved from the Agency's website(s) and/or Data.gov."*
+
+*United States. United States Geological Survey. USGS Flood Event Viewer. Reston, VA, 2019. 
+https://stn.wim.usgs.gov/FEV/#HarveyAug2017*
+
+
 
