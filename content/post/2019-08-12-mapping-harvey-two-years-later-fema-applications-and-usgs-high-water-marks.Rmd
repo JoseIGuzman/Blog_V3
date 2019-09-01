@@ -17,7 +17,7 @@ Two years have passed since Huricane Harvey hit the Texas coastline and Houston 
 
 I wanted to visualize how Hurricane Harvey affected southern the Texas Coast and the Houston area. For this blog, I used [FEMA data](https://www.fema.gov/media-library/assets/documents/34758) of renter and homeowner individual assistance applications, as well as United States [Geological Survey (USGS)](https://stn.wim.usgs.gov/fev/#HarveyAug2017) recorded high-water mark data to create an interactive map. I displayed the FEMA data alongside the USGS data to show how areas with recorded high-water marks during the hurricane water relate to the number of FEMA registrations in each zip code affected by Harvey. 
 
-![](https://media.giphy.com/media/lok4pktE7Cf7y2zYy5/giphy.gif)
+![](https://media.giphy.com/media/duXbkYn8TMFXnKqKM2/giphy.gif)
 
 ## Data Manipulation 
 
