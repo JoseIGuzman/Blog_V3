@@ -199,12 +199,12 @@ frameWidget(map_Fema)
 
 **Sources:**
 
-*United States. Federal Emergency Management Agency. Housing Assistance Data. Washington, DC: FEMA, 2019.https://www.fema.gov/media-library/assets/documents/34758. Data retreived August 12, 2019.*
+United States. Federal Emergency Management Agency. Housing Assistance Data. Washington, DC: FEMA, 2019.https://www.fema.gov/media-library/assets/documents/34758. Data retreived August 12, 2019.
 
-*FEMA and the Federal Government cannot vouch for the data or analyses derived from these data after the data have been retrieved from the Agency's website(s) and/or Data.gov."*
+FEMA and the Federal Government cannot vouch for the data or analyses derived from these data after the data have been retrieved from the Agency's website(s) and/or Data.gov."
 
-*United States. United States Geological Survey. USGS Flood Event Viewer. Reston, VA, 2019. 
-https://stn.wim.usgs.gov/FEV/#HarveyAug2017*
+United States. United States Geological Survey. USGS Flood Event Viewer. Reston, VA, 2019. 
+https://stn.wim.usgs.gov/FEV/#HarveyAug2017
 
 
 
