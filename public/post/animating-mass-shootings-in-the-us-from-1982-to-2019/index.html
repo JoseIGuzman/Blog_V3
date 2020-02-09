@@ -46,14 +46,113 @@
   <h1> Animating Mass Shootings in the US from 1982 to 2019 </h1>
 
   <div id=sub-header>
-    Jose Guzman · 2020/02/08 · 0 minute read
+    Jose Guzman · 2020/02/08 · 5 minute read
   </div>
 
   <div class="entry-content">
     
 
 
-
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The news organization <em>Mother Jones</em> has an open-source database of US mass shootings from 1982 to 2019 available <a href="https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/">online</a>. The data was gathered as part of an in-depth <a href="https://www.motherjones.com/politics/2012/07/mass-shootings-map/">investigation</a> on mass shootings after the movie-theater shooting in Aurora, Colorado in July, 2012, where 12 people were killed, and over 70 people injured. I’ve been wanting to learn how to animate data visualizations with the <code>gganimate</code> package. I thought that it would be a good idea to animate the mass shooting data. The goal of something like a GIF is to capture the attention viewers and hopefully encourage them to want to learn further about the subject.</p>
+</div>
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
+<p>I first loaded the <code>dyplr</code> package for data manipulation, and <code>ggplot2</code>, <code>ggthemes</code>, and <code>extrafont</code> and <code>maps</code> to create the initial map visualization. The <code>gganimate</code> package extends the <code>ggplot2</code> grammar of graphics to create animations.</p>
+<p>The available data contains 117 mass shooting cases with variables such as the case name, the date of the mass shooting, the number of fatalities, and injuries, total victims (fatalities and injuries combined),the race and gender of the shooter, and the type of shooting (mass or spree). For the animation I used the latitude, longitude to map the points of the shooting location, and the year variables that will be used to progressively reveal the shootings. Each point was sized by the total number of victims.</p>
+<pre class="r"><code>glimpse(Mass_Shootings)</code></pre>
+<pre><code>## Observations: 117
+## Variables: 24
+## $ case                             &lt;chr&gt; &quot;Jersey City kosher market shoo…
+## $ location                         &lt;chr&gt; &quot;Jersey City, New Jersey&quot;, &quot;Pen…
+## $ date                             &lt;chr&gt; &quot;12/10/2019&quot;, &quot;12/6/2019&quot;, &quot;8/3…
+## $ summary                          &lt;chr&gt; &quot;David N. Anderson, 47, and Fra…
+## $ fatalities                       &lt;dbl&gt; 4, 3, 7, 9, 22, 3, 12, 5, 3, 5,…
+## $ injured                          &lt;dbl&gt; 3, 8, 25, 27, 26, 12, 4, 6, 1, …
+## $ total_victims                    &lt;dbl&gt; 7, 11, 32, 36, 48, 15, 16, 11, …
+## $ location_1                       &lt;chr&gt; &quot;Other&quot;, &quot;Military&quot;, &quot;Other&quot;, &quot;…
+## $ age_of_shooter                   &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;36&quot;, &quot;24&quot;, &quot;21&quot;, &quot;19…
+## $ prior_signs_mental_health_issues &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;yes&quot;, &quot;-&quot;, &quot;-&quot;, &quot;TBD…
+## $ mental_health_details            &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;\&quot;One friend of the …
+## $ weapons_obtained_legally         &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Y…
+## $ where_obtained                   &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;Nevad…
+## $ weapon_type                      &lt;chr&gt; &quot;-&quot;, &quot;semiautomatic handgun&quot;, &quot;…
+## $ weapon_details                   &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;AR-15-style rif…
+## $ race                             &lt;chr&gt; &quot;Black&quot;, &quot;-&quot;, &quot;White&quot;, &quot;White&quot;,…
+## $ gender                           &lt;chr&gt; &quot;-&quot;, &quot;M&quot;, &quot;M&quot;, &quot;M&quot;, &quot;M&quot;, &quot;M&quot;, &quot;…
+## $ sources                          &lt;chr&gt; &quot;https://www.nytimes.com/2019/1…
+## $ mental_health_sources            &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;https://www.nytimes.…
+## $ sources_additional_age           &lt;chr&gt; &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;-&quot;, &quot;…
+## $ latitude                         &lt;dbl&gt; 40.70736, 30.36471, 31.92597, 3…
+## $ longitude                        &lt;dbl&gt; -74.08361, -87.28857, -102.2796…
+## $ type                             &lt;chr&gt; &quot;Spree&quot;, &quot;Mass&quot;, &quot;Spree&quot;, &quot;Mass…
+## $ year                             &lt;dbl&gt; 2019, 2019, 2019, 2019, 2019, 2…</code></pre>
+<p>For the GIF I wanted to focus on mainland US, so I filtered out the ‘Xerox Killings’ case of 1999 in Honolulu, Hawaii. I also created an id variable to partition the data when preparing the data visualization</p>
+<pre class="r"><code>MS_Main &lt;- Mass_Shootings %&gt;% filter(location != &quot;Honolulu, Hawaii&quot;) %&gt;% arrange(date)</code></pre>
+<pre class="r"><code>MS_Main &lt;- MS_Main %&gt;% mutate(id = row_number())</code></pre>
+<p>I used the <code>maps</code> package to display a map of the United States, and filtered the loaded map to exclude the state of Hawaii.</p>
+<pre class="r"><code>MainStates &lt;- map_data(&quot;state&quot;)</code></pre>
+</div>
+<div id="the-map" class="section level2">
+<h2>The Map</h2>
+<p>Before creating the map I loaded extra availables fonts to customize the data visualization texts, and created a set of breaks for the total victims legend.</p>
+<pre class="r"><code>font_import()</code></pre>
+<pre><code>## Importing fonts may take a few minutes, depending on the number of fonts and the speed of the system.
+## Continue? [y/n]</code></pre>
+<pre class="r"><code>loadfonts()</code></pre>
+<pre class="r"><code>mybreaks &lt;- c(10, 25, 50, 100, 600)</code></pre>
+<p>I wrote the code below to make the initial map to be animated:</p>
+<pre class="r"><code>map &lt;- ggplot() + 
+  # Code for the map
+  geom_polygon(data = MainStates, aes(x=long, y = lat, group = group), color = &quot;grey37&quot;, fill = &quot;grey12&quot;,   alpha = .9) + 
+  coord_fixed(1.3) + 
+  # For the pounts
+  geom_point(data=MS_Main, aes(x=longitude, y=latitude, group = id, size = total_victims, shape = 21,fill = &quot;firebrick3&quot;, color = &quot;firebrick3&quot;), alpha = 0.8) +
+  # The theme_void() function removes the x and y axis to just show the map
+  theme_void() + 
+  scale_shape_identity() +
+  # Set the breaks for the total victims size of the points 
+  scale_x_continuous(breaks = mybreaks) + 
+  # Remove the color and fill legends
+  guides(color = FALSE, fill= FALSE) +
+  # Determine the size of the points
+  scale_size(range = c(1, 9),breaks = mybreaks) +
+  # Add the title subtitle, caption, and legend title
+  ggtitle(&quot;US Mass Shootings 1982-2019&quot;) +
+  labs(subtitle = &#39;Year: {frame_along}&#39;,
+       caption = &quot;* Total victims includes fatalities and injuries\nSource: Mother Jones&quot;, 
+       size = &quot;Total Victims*&quot;) +
+  # The override.aes() function overides the default color of the legend points to the desired color
+  guides(size=guide_legend(override.aes=list(color= &quot;firebrick3&quot;))) +
+  # Add font 
+  theme(
+        # Move the legend towards the bottom
+        legend.position = &quot;bottom&quot;, 
+        # Place horizontal legend
+        legend.direction = &quot;horizontal&quot;,
+        # Customize text to Garamond and adjust the size and position of the title subtitle and caption
+        legend.text = element_text(family = &quot;Garamond&quot;),
+        legend.title = element_text(family = &quot;Garamond&quot;),
+        plot.title = element_text(family = &quot;Garamond&quot;, size = 16, hjust = 0.5),
+        plot.subtitle = element_text(family = &quot;Garamond&quot;, hjust = .95),
+        plot.caption = element_text(family = &quot;Garamond&quot;, hjust = 0.1),
+        # Set plot margins
+        plot.margin = margin(1,1,1,1, &quot;cm&quot;))</code></pre>
+<p>I set the map color to a dark gray with ligter gray for the state outlines. I wanted a strong contrast between the map and the points to emphasize the gravitiy of the shootings. The subtitle of ‘year: {frame_along}’ indicates the year transition of each frame created in the animation. I adjusted the subtitle to the right since I wanted the emphasis to be on the map.</p>
+<pre class="r"><code>map</code></pre>
+<p><img src="/post/2020-02-08-animating-mass-shootings-in-the-us-from-1982-to-2019_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="the-animation" class="section level2">
+<h2>The Animation</h2>
+<p>Creating the animation is as simple as adding the <code>transition_reveal()</code> function. This function defines how the data is revealed.</p>
+<pre class="r"><code>anim_map &lt;- map + transition_reveal(as.integer(year)) + enter_fade()</code></pre>
+<p>I set the global options to display sharp resolution for the animation output.</p>
+<p>To render the plot I use the <code>animate()</code> function and set the <code>end_pause</code> argument to 30 frames before the rendered animation is repeated.</p>
+<pre class="r"><code>options(gganimate.dev_args = list(width = 5, height = 7, res = 320))</code></pre>
+<pre class="r"><code>animate(anim_map, end_pause = 30)</code></pre>
+<p><img src="/post/2020-02-08-animating-mass-shootings-in-the-us-from-1982-to-2019_files/figure-html/unnamed-chunk-13-1.gif" /><!-- --></p>
+</div>
 
   </div>
 
@@ -87,6 +186,9 @@
 
   
   
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
 
 </body>
