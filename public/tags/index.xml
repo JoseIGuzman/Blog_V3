@@ -6,17 +6,35 @@
     <description>Recent content in Tags on Jose Guzman Data Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 25 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 08 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Animating</title>
+      <link>/tags/animating/</link>
+      <pubDate>Sat, 08 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/animating/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Data Visualization</title>
       <link>/tags/data-visualization/</link>
-      <pubDate>Sun, 25 Aug 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 08 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/data-visualization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gifs</title>
+      <link>/tags/gifs/</link>
+      <pubDate>Sat, 08 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/gifs/</guid>
       <description></description>
     </item>
     

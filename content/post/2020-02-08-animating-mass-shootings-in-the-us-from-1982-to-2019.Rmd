@@ -1,0 +1,16 @@
+---
+title: Animating Mass Shootings in the US from 1982 to 2019
+author: Jose Guzman
+date: '2020-02-08'
+slug: animating-mass-shootings-in-the-us-from-1982-to-2019
+categories:
+  - R
+  - Animating
+  - dataviz
+  - mapping
+tags:
+  - Data Visualization
+  - Animating
+  - gifs
+---
+
