@@ -37,11 +37,7 @@ library(gganimate)
 Mass_Shootings <- read_csv("/Users/joseguzman/Documents/R_Projects/Blog_Version_3/Mass_Shooting_Data/Mass_Shootings_Us.csv")
 ```
 
-<<<<<<< HEAD
 The available data contains 117 mass shooting cases with variables such as the case name, the date of the mass shooting, the number of fatalities, injuries, and total victims (fatalities and injuries combined), the race and gender of the shooter, and the type of shooting (mass or spree). For the animation I used latitude and longitude to map the points of the shooting location. The year variable was used to progressively reveal the shootings in the animation. Each point was sized by the total number of victims. 
-=======
-The available data contains 117 mass shooting cases with variables such as the case name, the date of the mass shooting, the number of fatalities, and injuries, total victims (fatalities and injuries combined),the race and gender of the shooter, and the type of shooting (mass or spree). For the animation I used the latitude, longitude to map the points of the shooting location, and the year variables that will be used to progressively reveal the shootings. Each point was sized by the total number of victims. 
->>>>>>> 36b3972052b9751a906e4b0445d8dc19c5da65be
 
 ```{r message = FALSE, include=TRUE}
 glimpse(Mass_Shootings)
